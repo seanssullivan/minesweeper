@@ -1,31 +1,12 @@
 import { createSlice } from "@reduxjs/toolkit";
 
 /**
- * Generate tile objects.
- * @param {number} numTiles - Number of tiles to generate.
- * @param {number} numBombs - Number of bombs to include.
- */
-const generateTiles = (numTiles, numBombs) => {
-  const tiles = [];
-  for (let n = 0; n < numTiles; n++) {
-    tiles.push({
-      hasBomb: n < numBombs,
-      clicked: false,
-      flagged: false,
-    });
-  }
-  return tiles;
-};
-
-/**
  * Create a game board with the provided dimensions.
+ * @param {array} tiles - Tiles to place on board.
  * @param {number} height - Number of tiles high.
  * @param {number} width - Number of tiles wide.
- * @param {number} bombs - Number of bombs hidden.
  */
-const createBoard = (height, width, bombs) => {
-  const tiles = generateTiles(height * width, bombs);
-
+const createBoard = (tiles, height, width) => {
   // To ensure that bombs are randomly placed, fill all rows with randomly selected tiles.
   const board = [];
   for (let row = 0; row < height; row++) {
@@ -44,24 +25,15 @@ const createBoard = (height, width, bombs) => {
  */
 const boardSlice = createSlice({
   name: "board",
-  initialState: [],
+  initialState: createBoard(16, 16, 40),
   reducers: {
-    initialize: (state, action) => {
+    restart: (state, action) => {
       const { height, width, bombs } = action.payload;
-      const board = createBoard(height, width, bombs);
-      return board;
-    },
-    setClicked: (state, action) => {
-      const { x, y } = action.payload;
-      state[y][x].clicked = true;
-    },
-    setFlagged: (state, action) => {
-      const { x, y } = action.payload;
-      state[y][x].flagged = true;
+      return createBoard(height, width, bombs);
     },
   },
 });
 
-export const { initialize, setClicked, setFlagged } = boardSlice.actions;
+export const { restart } = boardSlice.actions;
 
 export default boardSlice.reducer;

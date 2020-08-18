@@ -1,7 +1,7 @@
-import React, { useState } from "react";
-import { useSelector, useDispatch } from "react-redux";
+import React from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import { Grid, Paper } from "@material-ui/core";
+// import Tile from "features/board/Tile";
 
 const useStyles = makeStyles((theme) => ({
   defaultTile: {
@@ -13,7 +13,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export function Board() {
+export default function Board() {
   const classes = useStyles();
 
   function BoardRow() {

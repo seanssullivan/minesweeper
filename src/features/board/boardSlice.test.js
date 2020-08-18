@@ -1,10 +1,10 @@
-import board, { initialize, setClicked, setFlagged } from "./boardSlice";
+import board, { setClicked, setFlagged, restart } from "../tiles/tilesSlice";
 
 describe("boardSlice", () => {
   describe("initialize", () => {
     it("should add tiles to state", () => {
       const result = board([], {
-        type: initialize.type,
+        type: restart.type,
         payload: {
           height: 16,
           width: 16,
@@ -21,7 +21,7 @@ describe("boardSlice", () => {
 
     it("should add bombs to some tiles", () => {
       const result = board([], {
-        type: initialize.type,
+        type: restart.type,
         payload: {
           height: 16,
           width: 16,
@@ -38,7 +38,7 @@ describe("boardSlice", () => {
 
     it("should set clicked to false for all tiles", () => {
       const result = board([], {
-        type: initialize.type,
+        type: restart.type,
         payload: {
           height: 16,
           width: 16,
@@ -55,7 +55,7 @@ describe("boardSlice", () => {
 
     it("should set flagged to false for all tiles", () => {
       const result = board([], {
-        type: initialize.type,
+        type: restart.type,
         payload: {
           height: 16,
           width: 16,
