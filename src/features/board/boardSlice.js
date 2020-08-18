@@ -2,48 +2,66 @@ import { createSlice } from "@reduxjs/toolkit";
 
 /**
  * Generate tile objects.
- * @param {number} tiles - Number of tiles to generate.
- * @param {number} bombs - Number of bombs to include.
+ * @param {number} numTiles - Number of tiles to generate.
+ * @param {number} numBombs - Number of bombs to include.
  */
-const generateTiles = (tiles, bombs) => {
-  return Array(tiles).map((num) => {
-    return {
-      hasBomb: num < bombs,
+const generateTiles = (numTiles, numBombs) => {
+  const tiles = [];
+  for (let n = 0; n < numTiles; n++) {
+    tiles.push({
+      hasBomb: n < numBombs,
       clicked: false,
       flagged: false,
-    };
-  });
+    });
+  }
+  return tiles;
 };
 
 /**
  * Create a game board with the provided dimensions.
- * @param {number} width - Number of tiles wide.
  * @param {number} height - Number of tiles high.
+ * @param {number} width - Number of tiles wide.
  * @param {number} bombs - Number of bombs hidden.
  */
-const createBoard = (width, height, bombs) => {
-  const tiles = generateTiles(width * height, bombs);
+const createBoard = (height, width, bombs) => {
+  const tiles = generateTiles(height * width, bombs);
 
   // To ensure that bombs are randomly placed, fill all rows with randomly selected tiles.
-  return Array(height).map(() => {
-    return Array(width).map(() => {
+  const board = [];
+  for (let row = 0; row < height; row++) {
+    const rowTiles = [];
+    for (let col = 0; col < width; col++) {
       const index = Math.floor(Math.random() * tiles.length);
-      return tiles.splice(index, 1)[0];
-    });
-  });
+      rowTiles.push(tiles.splice(index, 1)[0]);
+    }
+    board.push(rowTiles);
+  }
+  return board;
 };
 
+/**
+ * Create the slice reducer.
+ */
 const boardSlice = createSlice({
   name: "board",
   initialState: [],
   reducers: {
     initialize: (state, action) => {
       const { height, width, bombs } = action.payload;
-      state = createBoard(height, width, bombs);
+      const board = createBoard(height, width, bombs);
+      return board;
+    },
+    setClicked: (state, action) => {
+      const { x, y } = action.payload;
+      state[y][x].clicked = true;
+    },
+    setFlagged: (state, action) => {
+      const { x, y } = action.payload;
+      state[y][x].flagged = true;
     },
   },
 });
 
-export const { initialize } = boardSlice.actions;
+export const { initialize, setClicked, setFlagged } = boardSlice.actions;
 
 export default boardSlice.reducer;
