@@ -1,54 +1,24 @@
 import React from "react";
-import { makeStyles } from "@material-ui/core/styles";
-import { Grid, Paper } from "@material-ui/core";
-// import Tile from "features/board/Tile";
+import { connect } from "react-redux";
+import { Grid } from "@material-ui/core";
+import BoardRow from "./BoardRow";
+// import _ from "lodash";
 
-const useStyles = makeStyles((theme) => ({
-  defaultTile: {
-    padding: theme.spacing(1),
-    textAlign: "center",
-    backgroundColor: "green",
-    borderRadius: 0,
-    // color: theme.palette.text.secondary,
-  },
-}));
+const mapState = (state) => {
+  return {
+    board: state.board,
+  };
+};
 
-export default function Board() {
-  const classes = useStyles();
-
-  function BoardRow() {
-    return (
-      <React.Fragment>
-        <Grid item xs={1}>
-          <Paper className={classes.defaultTile}>0</Paper>
-        </Grid>
-        <Grid item xs={1}>
-          <Paper className={classes.defaultTile}>0</Paper>
-        </Grid>
-        <Grid item xs={1}>
-          <Paper className={classes.defaultTile}>0</Paper>
-        </Grid>
-        <Grid item xs={1}>
-          <Paper className={classes.defaultTile}>0</Paper>
-        </Grid>
-      </React.Fragment>
-    );
-  }
-
+const Board = ({ board }) => {
+  console.log("Board rendered");
   return (
     <Grid container>
-      <Grid container item xs={12}>
-        <BoardRow />
-      </Grid>
-      <Grid container item xs={12}>
-        <BoardRow />
-      </Grid>
-      <Grid container item xs={12}>
-        <BoardRow />
-      </Grid>
-      <Grid container item xs={12}>
-        <BoardRow />
-      </Grid>
+      {board.rows.map((row) => (
+        <BoardRow key={row.id} id={row.id} />
+      ))}
     </Grid>
   );
-}
+};
+
+export default connect(mapState, null)(Board);
