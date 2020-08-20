@@ -9,9 +9,15 @@ const mapState = (state, ownProps) => {
 };
 
 const BoardRow = ({ tileIds }) => {
-  console.log("Row rendered");
   return (
-    <Grid container item>
+    <Grid
+      container
+      item
+      direction="row"
+      alignItems="center"
+      justify="center"
+      wrap="nowrap"
+    >
       {tileIds.map((id) => (
         <Tile key={id} id={id} />
       ))}

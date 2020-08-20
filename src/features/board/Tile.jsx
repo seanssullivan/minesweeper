@@ -1,20 +1,33 @@
 import React from "react";
 import { connect } from "react-redux";
 import _ from "lodash";
-import { makeStyles } from "@material-ui/core/styles";
 import { Paper } from "@material-ui/core";
+import ErrorOutlineIcon from "@material-ui/icons/ErrorOutline";
+import FlagIcon from "@material-ui/icons/Flag";
+import { makeStyles } from "@material-ui/core/styles";
 import { setRevealed, toggleFlagged } from "../board/boardSlice";
 
 const useStyles = makeStyles((theme) => ({
   root: {
     padding: theme.spacing(1),
     borderRadius: 0,
+    borderWidth: 1,
     width: 20,
     height: 20,
     textAlign: "center",
+    fontWeight: 500,
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
   },
-  status: (clicked) =>
-    clicked ? { backgroundColor: "brown" } : { backgroundColor: "green" },
+  status: (revealed) =>
+    revealed
+      ? { backgroundColor: "peru", borderStyle: "solid", borderColor: "peru" }
+      : {
+          backgroundColor: "green",
+          borderStyle: "outset",
+          borderColor: "green",
+        },
 }));
 
 const mapState = (state, ownProps) => {
@@ -35,7 +48,6 @@ const Tile = ({
   setRevealed,
   toggleFlagged,
 }) => {
-  console.log("Tile rendered");
   const classes = useStyles(isRevealed);
 
   /**
@@ -56,13 +68,15 @@ const Tile = ({
       onClick={handleClick}
       onContextMenu={handleClick}
     >
-      {isRevealed && hasBomb
-        ? "B"
-        : isFlagged
-        ? "F"
-        : isRevealed && nearbyBombs > 0
-        ? nearbyBombs
-        : ""}
+      {isRevealed && hasBomb ? (
+        <ErrorOutlineIcon style={{ color: "red" }} />
+      ) : isFlagged ? (
+        <FlagIcon color="secondary" />
+      ) : isRevealed && nearbyBombs > 0 ? (
+        nearbyBombs
+      ) : (
+        ""
+      )}
     </Paper>
   );
 };

@@ -102,7 +102,12 @@ const cascadeReveal = (state, [x, y]) => {
     return state;
   }
   const tile = state[y][x];
-  if (tile.hasBomb || tile.isRevealed) {
+  if (tile.isRevealed) {
+    return state;
+  }
+  if (tile.hasBomb) {
+    // TODO: add game over function.
+    state = revealTile(state, tile);
     return state;
   }
 
