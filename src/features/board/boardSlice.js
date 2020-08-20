@@ -63,7 +63,7 @@ const revealTile = (state, tile) => {
 };
 
 /**
- *
+ * Return the number of bombs in adjacent tiles.
  * @param {array} state - Two-dimensional array of objects.
  * @param {array} coords
  */
@@ -95,7 +95,7 @@ const countNearbyBombs = (state, [x, y]) => {
 /**
  * Set a tile to isRevealed, as well as adjacent tiles.
  * @param {array} state - Two-dimensional array of objects.
- * @param {array} id - Id of target tile.
+ * @param {array} coords - Coordinates of target tile.
  */
 const cascadeReveal = (state, [x, y]) => {
   if (x < 0 || x >= state.length || y < 0 || y >= state[0].length) {
