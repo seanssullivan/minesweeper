@@ -124,7 +124,7 @@ describe("boardSlice", () => {
     });
   });
 
-  describe("toggleFlagged", () => {
+  describe("setFlagged", () => {
     it("should set a tile to flagged", () => {
       const testBoard = [
         [
@@ -153,6 +153,7 @@ describe("boardSlice", () => {
         type: toggleFlagged.type,
         payload: {
           id: 1,
+          isFlagged: true,
         },
       });
 

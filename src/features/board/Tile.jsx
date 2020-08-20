@@ -1,11 +1,13 @@
 import React from "react";
-import { connect } from "react-redux";
+import { connect, useDispatch } from "react-redux";
 import _ from "lodash";
 import { Paper } from "@material-ui/core";
 import ErrorOutlineIcon from "@material-ui/icons/ErrorOutline";
 import FlagIcon from "@material-ui/icons/Flag";
 import { makeStyles } from "@material-ui/core/styles";
-import { setRevealed, toggleFlagged } from "../board/boardSlice";
+import { setRevealed, setFlagged } from "../board/boardSlice";
+import { decrement, increment } from "../counter/counterSlice";
+import { startTimer } from "../timer/timerSlice";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -31,12 +33,11 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const mapState = (state, ownProps) => {
-  return _.flatten(state.board).find((tile) => tile.id === ownProps.id);
-};
-
-const mapDispatch = {
-  setRevealed,
-  toggleFlagged,
+  const tileState = _.flatten(state.board).find(
+    (tile) => tile.id === ownProps.id
+  );
+  const timerActive = state.timer.isActive;
+  return Object.assign({}, tileState, { timerActive });
 };
 
 const Tile = ({
@@ -45,10 +46,23 @@ const Tile = ({
   isFlagged,
   hasBomb,
   nearbyBombs,
-  setRevealed,
-  toggleFlagged,
+  timerActive,
 }) => {
   const classes = useStyles(isRevealed);
+  const dispatch = useDispatch();
+
+  /**
+   * Toggle isFlagged between true and false.
+   */
+  const toggleFlagged = () => {
+    if (!isFlagged) {
+      dispatch(setFlagged({ id, isFlagged: true }));
+      dispatch(decrement());
+    } else {
+      dispatch(setFlagged({ id, isFlagged: false }));
+      dispatch(increment());
+    }
+  };
 
   /**
    * Event handler for differentiating left and right mouse clicks.
@@ -56,9 +70,12 @@ const Tile = ({
   const handleClick = (event) => {
     event.preventDefault();
     if (!isRevealed && event.type === "click") {
-      setRevealed({ id });
+      dispatch(setRevealed({ id }));
+      if (!timerActive) {
+        dispatch(startTimer());
+      }
     } else if (!isRevealed && event.type === "contextmenu") {
-      toggleFlagged({ id });
+      toggleFlagged();
     }
   };
 
@@ -81,4 +98,4 @@ const Tile = ({
   );
 };
 
-export default connect(mapState, mapDispatch)(Tile);
+export default connect(mapState, null)(Tile);

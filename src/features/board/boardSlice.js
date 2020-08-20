@@ -141,13 +141,11 @@ const boardSlice = createSlice({
       return cascadeReveal(state, [x, y]);
     },
     // Toggle the state of a tile between flagged and not flagged
-    toggleFlagged: (state, action) => {
-      const { id } = action.payload;
+    setFlagged: (state, action) => {
+      const { id, isFlagged } = action.payload;
       return state.map((row) => [
         ...row.map((tile) =>
-          tile.id === id && !tile.isRevealed
-            ? { ...tile, isFlagged: !tile.isFlagged }
-            : tile
+          tile.id === id && !tile.isRevealed ? { ...tile, isFlagged } : tile
         ),
       ]);
     },
@@ -160,6 +158,6 @@ const boardSlice = createSlice({
   },
 });
 
-export const { setRevealed, toggleFlagged, restart } = boardSlice.actions;
+export const { setRevealed, setFlagged, restart } = boardSlice.actions;
 
 export default boardSlice.reducer;
