@@ -1,6 +1,6 @@
 import React from "react";
 import { Counter } from "../features/counter/Counter";
-import { Timer } from "../features/timer/Timer";
+import Timer from "../features/timer/Timer";
 import { makeStyles } from "@material-ui/core/styles";
 import AppBar from "@material-ui/core/AppBar";
 import Toolbar from "@material-ui/core/Toolbar";

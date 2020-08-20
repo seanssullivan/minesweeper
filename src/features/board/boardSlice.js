@@ -51,8 +51,8 @@ const tileCoordsSelector = (state, id) => {
 
 /**
  * Set tile to isRevealed.
- * @param {*} state - Two-dimensional array of objects.
- * @param {*} tile - Target tile.
+ * @param {array} state - Two-dimensional array of objects.
+ * @param {object} tile - Target tile.
  */
 const revealTile = (state, tile) => {
   return state.map((row) => [
@@ -114,6 +114,7 @@ const cascadeReveal = (state, [x, y]) => {
   state = revealTile(state, tile);
 
   if (tile.nearbyBombs === 0) {
+    // TODO: Convert into an array of tiles.
     state = cascadeReveal(state, [x - 1, y]);
     state = cascadeReveal(state, [x + 1, y]);
     state = cascadeReveal(state, [x, y - 1]);

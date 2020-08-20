@@ -8,18 +8,18 @@ export const timerSlice = createSlice({
   },
   reducers: {
     startTimer: (state) => {
+      state.startTime = Math.round(Date.now() / 1000);
       state.isActive = true;
-      state.startTime = Date.now();
     },
   },
 });
 
-export const { startTimer, increment } = timerSlice.actions;
+export const { startTimer } = timerSlice.actions;
 
 export const selectStartTime = (state) => {
-  const minutes = Math.floor(state.timer.seconds / 60);
-  const seconds = state.timer.seconds % minutes || 0;
-  return `${minutes}:${seconds.toString().padStart(2, "0")}`;
+  return state.timer.isActive
+    ? state.timer.startTime
+    : Math.round(Date.now() / 1000);
 };
 
 export default timerSlice.reducer;

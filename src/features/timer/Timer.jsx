@@ -12,41 +12,41 @@ const StyledBadge = withStyles((theme) => ({
   },
 }))(Badge);
 
+const formatTime = (time) => {
+  const seconds = time % 60;
+  const minutes = Math.floor(time / 60);
+  return `${minutes}:${seconds.toString().padStart(2, "0")}`;
+};
+
+const getElapsedTime = (startTime) => {
+  const currentTime = Math.round(Date.now() / 1000);
+  const formattedTime = formatTime(currentTime - startTime);
+  return formattedTime;
+};
+
 const mapState = (state) => {
   return {
-    isActive: state.timer.isActive,
     startTime: state.timer.startTime,
+    isActive: state.timer.isActive,
   };
 };
 
-export function Timer({ isActive, startTime }) {
+const Timer = ({ startTime, isActive }) => {
   const [displayTime, setDisplayTime] = useState("0:00");
 
   useEffect(() => {
-    const getCurrentTime = (startTime) => {
-      if (isActive) {
-        const time = Date.now() - startTime;
-        const minutes = Math.floor(time / 60);
-        const seconds = time % minutes;
-        return `${minutes}:${seconds.toString().padStart(2, "0")}`;
-      } else {
-        return "0:00";
-      }
-    };
-
     const interval = setInterval(() => {
-      const time = getCurrentTime(startTime);
-      console.log(time);
+      const time = isActive ? getElapsedTime(startTime) : "0:00";
       setDisplayTime(time);
     }, 1000);
     return () => clearInterval(interval);
-  }, [isActive, startTime]);
+  }, [startTime, isActive]);
 
   return (
     <StyledBadge badgeContent={displayTime} color="primary">
       <TimerIcon fontSize="large" />
     </StyledBadge>
   );
-}
+};
 
 export default connect(mapState, null)(Timer);
