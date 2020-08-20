@@ -1,8 +1,9 @@
 import React from "react";
 import { connect } from "react-redux";
+import _ from "lodash";
 import { makeStyles } from "@material-ui/core/styles";
 import { Paper } from "@material-ui/core";
-import { setClicked, toggleFlagged } from "../board/boardSlice";
+import { setRevealed, toggleFlagged } from "../board/boardSlice";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -17,28 +18,34 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const mapState = (state, ownProps) => {
-  const row = state.board.rows.find((row) => row.id === ownProps.rowId);
-  const tile = row.tiles.find((tile) => tile.id === ownProps.id);
-  return tile;
+  return _.flatten(state.board).find((tile) => tile.id === ownProps.id);
 };
 
 const mapDispatch = {
-  setClicked,
+  setRevealed,
   toggleFlagged,
 };
 
-const Tile = ({ id, clicked, flagged, hasBomb, setClicked, toggleFlagged }) => {
+const Tile = ({
+  id,
+  isRevealed,
+  isFlagged,
+  hasBomb,
+  nearbyBombs,
+  setRevealed,
+  toggleFlagged,
+}) => {
   console.log("Tile rendered");
-  const classes = useStyles(clicked);
+  const classes = useStyles(isRevealed);
 
   /**
    * Event handler for differentiating left and right mouse clicks.
    */
   const handleClick = (event) => {
     event.preventDefault();
-    if (event.type === "click" || event.nativeEvent.which === 1) {
-      setClicked({ id });
-    } else if (event.type === "contextmenu" || event.nativeEvent.which === 3) {
+    if (!isRevealed && event.type === "click") {
+      setRevealed({ id });
+    } else if (!isRevealed && event.type === "contextmenu") {
       toggleFlagged({ id });
     }
   };
@@ -49,7 +56,13 @@ const Tile = ({ id, clicked, flagged, hasBomb, setClicked, toggleFlagged }) => {
       onClick={handleClick}
       onContextMenu={handleClick}
     >
-      {flagged && !clicked ? "F" : clicked ? 1 : ""}
+      {isRevealed && hasBomb
+        ? "B"
+        : isFlagged
+        ? "F"
+        : isRevealed && nearbyBombs > 0
+        ? nearbyBombs
+        : ""}
     </Paper>
   );
 };
