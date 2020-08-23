@@ -1,9 +1,11 @@
-import React from "react";
-// import { Counter } from "../features/counter/Counter";
-import Board from "../features/board/Board";
+import React, { useState, useEffect } from "react";
+import { connect } from "react-redux";
 import { Container } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import MenuBar from "./MenuBar";
+import Board from "../features/board/Board";
+import { hasWonSelector, hasLostSelector } from "../features/board/boardSlice";
+import Status from "./Status";
 import "./App.css";
 
 const useStyles = makeStyles((theme) => ({
@@ -16,12 +18,34 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function App() {
+const mapState = (state) => {
+  return {
+    hasWon: hasWonSelector(state),
+    hasLost: hasLostSelector(state),
+  };
+};
+
+const App = ({ hasWon, hasLost }) => {
   const classes = useStyles();
+  const [message, setMessage] = useState("");
+
+  useEffect(() => {
+    if (hasWon) {
+      setMessage("You Win!");
+    } else if (hasLost) {
+      setMessage("Game Over");
+    } else {
+      setMessage("");
+    }
+  }, [hasWon, hasLost]);
+
   return (
     <Container className={`App ${classes.root}`}>
+      {message && <Status message={message} />}
       <MenuBar />
       <Board />
     </Container>
   );
-}
+};
+
+export default connect(mapState, null)(App);

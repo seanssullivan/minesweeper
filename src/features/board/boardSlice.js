@@ -1,4 +1,4 @@
-import { createSlice } from "@reduxjs/toolkit";
+import { createSlice, createSelector } from "@reduxjs/toolkit";
 import _ from "lodash";
 
 /**
@@ -21,15 +21,21 @@ const generateTiles = (amount, bombs) => {
 
 /**
  * Create a new board of the provided dimensions.
- * @param {*} height - Number of tiles high.
- * @param {*} width - Number of tiles wide.
- * @param {*} bombs - Number of bombs to include.
+ * @param {number} height - Number of tiles high.
+ * @param {number} width - Number of tiles wide.
+ * @param {number} bombs - Number of bombs to include.
  */
 const createBoard = (height, width, bombs) => {
   const tiles = generateTiles(height * width, bombs);
   return _.chunk(tiles, width);
 };
 
+/**
+ *
+ * @param {number} height - Number of tiles high.
+ * @param {number} width - Number of tiles wide.
+ * @param {number} bombs - Number of bombs to include.
+ */
 const startGame = (height, width, bombs) => {
   const board = createBoard(height, width, bombs);
   board.map((row, y) =>
@@ -50,22 +56,9 @@ const tileCoordsSelector = (state, id) => {
 };
 
 /**
- * Set tile to isRevealed.
- * @param {array} state - Two-dimensional array of objects.
- * @param {object} tile - Target tile.
- */
-const revealTile = (state, tile) => {
-  return state.map((row) => [
-    ...row.map((t) =>
-      t.id === tile.id && !tile.isFlagged ? { ...t, isRevealed: true } : t
-    ),
-  ]);
-};
-
-/**
  * Return the number of bombs in adjacent tiles.
  * @param {array} state - Two-dimensional array of objects.
- * @param {array} coords
+ * @param {array} coords - Starting X and Y coordinates.
  */
 const countNearbyBombs = (state, [x, y]) => {
   const adjacentTiles = [];
@@ -93,6 +86,19 @@ const countNearbyBombs = (state, [x, y]) => {
 };
 
 /**
+ * Set tile to isRevealed.
+ * @param {array} state - Two-dimensional array of objects.
+ * @param {object} tile - Target tile.
+ */
+const revealTile = (state, tile) => {
+  return state.map((row) => [
+    ...row.map((t) =>
+      t.id === tile.id && !tile.isFlagged ? { ...t, isRevealed: true } : t
+    ),
+  ]);
+};
+
+/**
  * Set a tile to isRevealed, as well as adjacent tiles.
  * @param {array} state - Two-dimensional array of objects.
  * @param {array} coords - Coordinates of target tile.
@@ -105,14 +111,8 @@ const cascadeReveal = (state, [x, y]) => {
   if (tile.isRevealed) {
     return state;
   }
-  if (tile.hasBomb) {
-    // TODO: add game over function.
-    state = revealTile(state, tile);
-    return state;
-  }
 
   state = revealTile(state, tile);
-
   if (tile.nearbyBombs === 0) {
     // TODO: Convert into an array of tiles.
     state = cascadeReveal(state, [x - 1, y]);
@@ -150,15 +150,49 @@ const boardSlice = createSlice({
         ),
       ]);
     },
+    // Reveal all bombs on grid.
+    showBombs: (state) => {
+      return state.map((row) => [
+        ...row.map((tile) =>
+          tile.hasBomb ? { ...tile, isRevealed: true } : tile
+        ),
+      ]);
+    },
     // Reset the game board
-    restart: (state, action) => {
+    resetBoard: (state, action) => {
       const { height, width, bombs } = action.payload;
-      const newBoard = startGame(height, width, bombs);
-      return newBoard;
+      return startGame(height, width, bombs);
     },
   },
 });
 
-export const { setRevealed, setFlagged, restart } = boardSlice.actions;
+const allTilesSelector = (state) => _.flatten(state.board);
+
+const allBombsSelector = createSelector(allTilesSelector, (tiles) =>
+  tiles.filter((tile) => tile.hasBomb)
+);
+
+const allSafeTilesSelector = createSelector(allTilesSelector, (tiles) =>
+  tiles.filter((tile) => !tile.hasBomb)
+);
+
+export const hasWonSelector = createSelector(
+  allBombsSelector,
+  allSafeTilesSelector,
+  (allBombs, allSafeTiles) =>
+    allBombs.every((bomb) => bomb.isFlagged) ||
+    allSafeTiles.every((tile) => tile.isRevealed)
+);
+
+export const hasLostSelector = createSelector(allBombsSelector, (allBombs) =>
+  allBombs.some((bomb) => bomb.isRevealed)
+);
+
+export const {
+  setRevealed,
+  setFlagged,
+  showBombs,
+  resetBoard,
+} = boardSlice.actions;
 
 export default boardSlice.reducer;

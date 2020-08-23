@@ -1,5 +1,5 @@
 import React from "react";
-import { Counter } from "../features/counter/Counter";
+import Counter from "../features/counter/Counter";
 import Timer from "../features/timer/Timer";
 import { makeStyles } from "@material-ui/core/styles";
 import AppBar from "@material-ui/core/AppBar";
@@ -8,7 +8,7 @@ import "./App.css";
 
 const useStyles = makeStyles((theme) => ({
   nav: {
-    height: "60px",
+    height: "80px",
     width: "612px",
     display: "block",
     backgroundColor: "green",
@@ -17,8 +17,7 @@ const useStyles = makeStyles((theme) => ({
     alignItems: "center",
   },
   toolbar: {
-    paddingLeft: "150px",
-    paddingRight: "150px",
+    paddingBottom: "0px",
     flexDirection: "row",
     justifyContent: "space-around",
     alignItems: "center",
@@ -31,6 +30,7 @@ export default function MenuBar() {
     <AppBar position="relative" className={classes.nav}>
       <Toolbar className={classes.toolbar}>
         <Counter />
+        <h1>Minesweeper</h1>
         <Timer />
       </Toolbar>
     </AppBar>

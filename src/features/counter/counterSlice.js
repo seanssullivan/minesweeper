@@ -12,10 +12,13 @@ export const counterSlice = createSlice({
     decrement: (state) => {
       state.value -= 1;
     },
+    resetCounter: (state) => {
+      state.value = 40;
+    },
   },
 });
 
-export const { increment, decrement } = counterSlice.actions;
+export const { increment, decrement, resetCounter } = counterSlice.actions;
 
 export const selectCount = (state) => state.counter.value;
 

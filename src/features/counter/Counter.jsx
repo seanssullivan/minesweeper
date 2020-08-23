@@ -1,9 +1,8 @@
 import React from "react";
-import { useSelector } from "react-redux";
+import { connect } from "react-redux";
 import { withStyles } from "@material-ui/core/styles";
 import Badge from "@material-ui/core/Badge";
 import FlagIcon from "@material-ui/icons/Flag";
-import { selectCount } from "./counterSlice";
 
 const StyledBadge = withStyles((theme) => ({
   badge: {
@@ -13,12 +12,16 @@ const StyledBadge = withStyles((theme) => ({
   },
 }))(Badge);
 
-export function Counter() {
-  const count = useSelector(selectCount);
+const mapState = (state) => {
+  return { count: state.counter.value };
+};
 
+const Counter = ({ count }) => {
   return (
     <StyledBadge badgeContent={count} color="primary">
       <FlagIcon fontSize="large" />
     </StyledBadge>
   );
-}
+};
+
+export default connect(mapState, null)(Counter);

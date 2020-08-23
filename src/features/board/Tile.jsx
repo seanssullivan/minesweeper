@@ -5,9 +5,9 @@ import { Paper } from "@material-ui/core";
 import ErrorOutlineIcon from "@material-ui/icons/ErrorOutline";
 import FlagIcon from "@material-ui/icons/Flag";
 import { makeStyles } from "@material-ui/core/styles";
-import { setRevealed, setFlagged } from "../board/boardSlice";
+import { setRevealed, setFlagged, showBombs } from "../board/boardSlice";
 import { decrement, increment } from "../counter/counterSlice";
-import { startTimer } from "../timer/timerSlice";
+import { startTimer, stopTimer } from "../timer/timerSlice";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -37,7 +37,10 @@ const mapState = (state, ownProps) => {
     (tile) => tile.id === ownProps.id
   );
   const timerActive = state.timer.isActive;
-  return Object.assign({}, tileState, { timerActive });
+  return Object.assign({}, tileState, {
+    flagCount: state.counter.value,
+    timerActive,
+  });
 };
 
 const Tile = ({
@@ -46,6 +49,7 @@ const Tile = ({
   isFlagged,
   hasBomb,
   nearbyBombs,
+  flagCount,
   timerActive,
 }) => {
   const classes = useStyles(isRevealed);
@@ -55,10 +59,10 @@ const Tile = ({
    * Toggle isFlagged between true and false.
    */
   const toggleFlagged = () => {
-    if (!isFlagged) {
+    if (!isFlagged && flagCount > 0) {
       dispatch(setFlagged({ id, isFlagged: true }));
       dispatch(decrement());
-    } else {
+    } else if (isFlagged) {
       dispatch(setFlagged({ id, isFlagged: false }));
       dispatch(increment());
     }
@@ -71,7 +75,10 @@ const Tile = ({
     event.preventDefault();
     if (!isRevealed && event.type === "click") {
       dispatch(setRevealed({ id }));
-      if (!timerActive) {
+      if (hasBomb) {
+        dispatch(stopTimer());
+        dispatch(showBombs());
+      } else if (!timerActive) {
         dispatch(startTimer());
       }
     } else if (!isRevealed && event.type === "contextmenu") {

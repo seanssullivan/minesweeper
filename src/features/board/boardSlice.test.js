@@ -1,11 +1,11 @@
 import _ from "lodash";
-import board, { setRevealed, toggleFlagged, restart } from "./boardSlice";
+import board, { setRevealed, toggleFlagged, resetBoard } from "./boardSlice";
 
 describe("boardSlice", () => {
   describe("createBoard", () => {
     it("should add tiles to state", () => {
       const result = board([], {
-        type: restart.type,
+        type: resetBoard.type,
         payload: {
           height: 16,
           width: 16,
@@ -20,7 +20,7 @@ describe("boardSlice", () => {
 
     it("should add bombs to some tiles", () => {
       const result = board([], {
-        type: restart.type,
+        type: resetBoard.type,
         payload: {
           height: 16,
           width: 16,
@@ -37,7 +37,7 @@ describe("boardSlice", () => {
 
     it("should initially set clicked to false for all tiles", () => {
       const result = board([], {
-        type: restart.type,
+        type: resetBoard.type,
         payload: {
           height: 16,
           width: 16,
@@ -54,7 +54,7 @@ describe("boardSlice", () => {
 
     it("should set isFlagged to false for all tiles", () => {
       const result = board([], {
-        type: restart.type,
+        type: resetBoard.type,
         payload: {
           height: 16,
           width: 16,
@@ -71,7 +71,7 @@ describe("boardSlice", () => {
 
     it("should be the provided dimensions", () => {
       const result = board([], {
-        type: restart.type,
+        type: resetBoard.type,
         payload: {
           height: 16,
           width: 16,
